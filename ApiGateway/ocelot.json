@@ -1,0 +1,97 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/reservation", // Represent the address of microservice 
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 9001
+        }
+      ],
+      "UpstreamPathTemplate": "/r", // Represent the address can be used by user.
+      "UpstreamHttpMethod": [ "GET" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "Limit": 2,
+        "PeriodTimespan": 3
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 45,
+        "Region": "default",
+        "Header": "OC-Caching-Control",
+        "EnableContentHashing": false
+      },
+      "Key": "reservation"
+    },
+    {
+      "DownstreamPathTemplate": "/api/contact/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 9000
+        }
+      ],
+      "UpstreamPathTemplate": "/contact/{everything}",
+      "UpstreamHttpMethod": [ "GET" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "15s",
+        "Limit": 2,
+        "PeriodTimespan": 10
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 15,
+        "Region": "default",
+        "Header": "OC-Caching-Control",
+        "EnableContentHashing": false
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/contact",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 9000
+        }
+      ],
+      "UpstreamPathTemplate": "/contact",
+      "UpstreamHttpMethod": [ "GET" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "15s",
+        "Limit": 2,
+        "PeriodTimespan": 10
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 15,
+        "Region": "default",
+        "Header": "OC-Caching-Control",
+        "EnableContentHashing": false
+      },
+      "Key": "contact"
+    }
+  ],
+  "Aggregates": [
+    {
+      "UpstreamPathTemplate": "/aggregatev1",
+      "RouteKeys": [ "reservation", "contact" ]
+    },
+    {
+      "UpstreamPathTemplate": "/aggregatev2",
+      "RouteKeys": ["contact", "reservation"]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:9002",
+    "RateLimitOptions": {
+      "QuotaExceededMessage": "API rate limit exceeded!"
+    }
+  }
+}
